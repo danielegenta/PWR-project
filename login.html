@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="utf-8">
+        <title>Login</title>
+		<meta name="author" content="Daniele Genta" >
+		<meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+    	<link rel="stylesheet" type="text/css" href="./common/style.css" >
+		<script src="./common/script.js"></script>
+		<script>
+			// funzione che mi serve per estrarre l'ultimo username utilizzato con successo
+			// utilizzo cookie con expiration in due giorni
+			function getCook(cookiename) 
+			{
+				var cookiestring=RegExp(""+cookiename+"[^;]+").exec(document.cookie);
+				return decodeURIComponent(!!cookiestring ? cookiestring.toString().replace(/^[^=]+./,"") : "");
+			}
+			
+			//Auto completamento username, con ultimo username valido
+			function autofill()
+			{
+				document.getElementById("formLogin").elements["username"].value = getCook("username");
+			}
+			
+			// Controllo lato client dei dati inseriti nel form (invio al server solo se sono corretti)
+			// => maggior sicurezza, minori richieste a server 
+            function ValidaForm(username, password)
+			{
+				"use strict";
+				
+				var reUsername = /^(?=(.*[\d]){1})(?=.*[A-Za-z\$])[A-Za-z\%][A-Za-z\d\%]{2,5}$/;
+				var rePassword = /^(?=.*[A-Z])(?=.*[a-z])[A-Za-z]{4,8}$/;
+				
+				// username non rispetta criteri
+				if (!reUsername.test(username))
+				{
+					alert("Attenzione, devi inserire uno username valido. " +
+						  "\nFormato corretto:\nlunghezza di (2,5) caratteri;" +
+						  "\nalmeno un carattere numerico ed uno non numerico; sono ammessi caratteri alfabetici, numerici ed il carattere %." +
+						  "\nDeve iniziare con carattere alfabetico o con il carattere %.");
+					return false;
+				}
+				
+				// password non rispetta criteri
+				if (!rePassword.test(password))
+				{
+					alert("Attenzione, devi inserire una password valida." +
+							"\nFormato corretto:\nLunghezza di (4,8) caratteri;" +
+							"\nalmeno un carattere maiuscolo ed uno minuscolo.");
+					return false;
+				}
+				
+				// manderò i dati al server solo se rispettano tutti i criteri 
+				return true;
+			}                
+        </script>
+    </head>
+	<body onLoad = "autofill()" class = "home-body">
+		<div class = "grid-container">
+			<div class = "section-head">
+			
+				<!-- Header e footer dinamici (script.js) -->
+				<header id = "header"></header>
+				
+				<!-- menu -->
+				<nav class = "menu">
+				  <a href="./home.php">Home</a>
+				  <!--nota: da login non posso fare login/logout (impossibile accedervi) -->
+				  <a href = "#">Login</a>
+				  <a href = "#">Logout</a>
+				  <a href="./new.html">New</a>
+				  <a href="./libri.php">Libri</a>
+				</nav>
+			</div>
+			
+			<!-- Sezione Principale -->
+			<main>
+				<!-- Titolo della pagina-->
+				<h1>
+					Login
+				</h1>
+				<div class = "main-text">
+					<span class="main-text-info">Inserisci username e password per autenticarti alla biblioteca.</span>
+					<form id = "formLogin" action = "login.php" method = "POST" onSubmit = "return ValidaForm(username.value, password.value);">
+						<p><input type="text" name="username" placeholder = "Username..." class = "input-text" required></p>
+						<p><input type="password" name="password" placeholder = "Password..." class = "input-text" required></p>
+						<p><input type="reset" value = "Pulisci" class = "input-button"></p>
+						<p><input type="submit" value = "Ok" class = "input-button"></p>
+					</form>
+				</div>
+			</main>
+			
+			<footer id = "footer"></footer>
+		</div>
+	</body>
+</html>
